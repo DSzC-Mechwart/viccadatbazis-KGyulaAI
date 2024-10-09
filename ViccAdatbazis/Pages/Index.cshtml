@@ -1,10 +1,75 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Viccek";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Viccek</h1>
+    <div id="viccek-lista">
+        @foreach (var vicc in Model.Viccek)
+        {
+            <div class="vicc">
+                <p>@vicc.Tartalom - <strong>@vicc.Feltolto</strong></p>
+                <p>Tetszik: @vicc.Tetszik, Nem tetszik: @vicc.NemTetszik</p>
+                <button onclick="like(@vicc.Id)">Tetszik</button>
+                <button onclick="dislike(@vicc.Id)">Nem tetszik</button>
+            </div>
+        }
+    </div>
+
+    <h2>Új vicc hozzáadása</h2>
+    <input type="text" id="vicc-tartalom" placeholder="Vicctartalom" />
+    <input type="text" id="feltolto" placeholder="Feltöltő neve" />
+    <button id="hozzaad-btn">Hozzáadás</button>
 </div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        const apiUrl = '/api/viccek';
+
+        function loadViccek() {
+            $.get(apiUrl, function (data) {
+                $('#viccek-lista').empty();
+                data.forEach(vicc => {
+                    $('#viccek-lista').append(`
+                                <div class="vicc">
+                                    <p>${vicc.tartalom} - <strong>${vicc.feltolto}</strong></p>
+                                    <p>Tetszik: ${vicc.tetszik}, Nem tetszik: ${vicc.nemTetszik}</p>
+                                    <button onclick="like(${vicc.id})">Tetszik</button>
+                                    <button onclick="dislike(${vicc.id})">Nem tetszik</button>
+                                </div>
+                            `);
+                });
+            });
+        }
+
+        function addVicc() {
+            const tartalom = $('#vicc-tartalom').val();
+            const feltolto = $('#feltolto').val();
+            $.post(apiUrl, { tartalom, feltolto }, function () {
+                loadViccek();
+                $('#vicc-tartalom').val('');
+                $('#feltolto').val('');
+            });
+        }
+
+        function like(id) {
+            $.post(`${apiUrl}/${id}/ertekeles`, true, function () {
+                loadViccek();
+            });
+        }
+
+        function dislike(id) {
+            $.post(`${apiUrl}/${id}/ertekeles`, false, function () {
+                loadViccek();
+            });
+        }
+
+        $(document).ready(function () {
+            loadViccek();
+            $('#hozzaad-btn').click(addVicc);
+        });
+    </script>
+}
