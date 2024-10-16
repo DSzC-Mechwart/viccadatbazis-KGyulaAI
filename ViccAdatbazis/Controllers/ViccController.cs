@@ -83,5 +83,23 @@ namespace ViccAdatbazis.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
+        //Vicc lájk
+        [Route("{id}/like")] //https://localhost/api/Vicc/1/like
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<string>> Lajkolas(int id)
+        {
+            var vicc = _context.Viccek.Find(id);
+            if (vicc == null)
+            {
+                return NotFound();
+            }
+            vicc.Tetszik++;
+            _context.Entry(vicc).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return Ok(vicc.Tetszik);
+        }
+
+        //Vicc dislájk
     }
 }

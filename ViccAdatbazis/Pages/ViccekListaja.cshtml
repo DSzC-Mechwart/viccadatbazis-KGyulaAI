@@ -41,7 +41,8 @@
                 @Html.DisplayFor(modelItem => item.Feltolto)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Tetszik)
+                <span id="likeDb">@Html.DisplayFor(modelItem => item.Tetszik)</span>
+                <button onclick="lajkolas(@item.Id)">Tetszik</button>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.NemTetszik)
